@@ -6,8 +6,9 @@ const ctx = canvas.getContext('2d');
 let circleX = 100;
 let circleY = 100;
 const radius = 25;
-const speed = 5;
+const moveSpeed = 1.5;
 const groundSpeed = 2;
+let isJumping = false;
 const jumpSpeed = 5;
 let groundCircleX = canvas.width - 50
 
@@ -36,6 +37,14 @@ function animate() {
   requestAnimationFrame(animate)
   ctx?.clearRect(0, 0, canvas.width, canvas.height)
 
+  //move top circle
+
+  circleX += moveSpeed;
+  if (circleX >= canvas.width - radius) {
+    circleX = -radius
+  }
+
+// move ground circle
   groundCircleX -= groundSpeed;
   if (groundCircleX <= -50) {
     groundCircleX = canvas.width - 50
@@ -45,24 +54,6 @@ function animate() {
   drawGroundCircle(groundCircleX, 150, 10)
   drawLine(150, 50, 800);
 }
-
-// canvas.addEventListener('click', function(e) {
-//   circleX = e.clientX - canvas.getBoundingClientRect().left; 
-// })
-
-// *****************************************************************************
-// **** code to move circle left, right, and jump up when pressing spacebar **** 
-document.addEventListener('keydown', function(event) {
-  if (event.key === "ArrowRight") {
-    circleX = Math.min(canvas.width - radius, circleX + speed);
-  } else if (event.key === "ArrowLeft") {
-    circleX = Math.max(radius, circleX - speed)
-  } else if (event.key === ' ') {
-    jumpUp();
-  }
-})
-// *******************************************************************************
-
 
 
 function jumpUp() {
@@ -84,4 +75,30 @@ function jumpUp() {
   }
 }
 
+document.addEventListener('keydown', function(e) {
+  if (e.key === ' ') {
+    jumpUp();
+  }
+})
+
 animate()
+
+
+// canvas.addEventListener('click', function(e) {
+//   circleX = e.clientX - canvas.getBoundingClientRect().left; 
+// })
+
+// *****************************************************************************
+// **** code to move circle left, right, and jump up when pressing spacebar **** 
+// document.addEventListener('keydown', function(event) {
+//   if (event.key === "ArrowRight") {
+//     circleX = Math.min(canvas.width - radius, circleX + moveSpeed);
+//   } else if (event.key === "ArrowLeft") {
+//     circleX = Math.max(radius, circleX - moveSpeed)
+//   } else if (event.key === ' ') {
+//     jumpUp();
+//   }
+// })
+// *******************************************************************************
+
+
