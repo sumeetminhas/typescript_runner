@@ -3,6 +3,15 @@ const canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
 
 const ctx = canvas.getContext('2d');
 
+type Phase = { name: string, description: string }
+
+const phases: Phase[] = [
+  { "name": "menstrual", "description": "something about menstrual phase" },
+  { "name": "follicular", "description": "something about follicular phase" },
+  { "name": "ovulation", "description": "something about ovulation phase" },
+  { "name": "luteal", "description": "something about luteal phase" }
+]
+
 let circleX = 100;
 let circleY = 100;
 const radius = 25;
@@ -90,8 +99,16 @@ function collisionDetection() {
   const distanceX = Math.abs(circleX - groundCircleX);
   if (distanceX <= radius * 2) {
     isColliding = true;
+    cyclePhases(phases)
   } else {
     isColliding = false;
+  }
+}
+
+function cyclePhases(arr: Phase[]) {
+  for (let i = 0; i < arr.length; i++) {
+    const phase = arr[i]
+    console.log(`Phase: ${phase.name} Description: ${phase.description}`)
   }
 }
 
@@ -102,6 +119,7 @@ document.addEventListener('keydown', function(e) {
 })
 
 animate()
+
 
 
 // canvas.addEventListener('click', function(e) {
