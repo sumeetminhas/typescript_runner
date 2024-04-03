@@ -10,7 +10,8 @@ const moveSpeed = 1.5;
 const groundSpeed = 2;
 let isJumping = false;
 const jumpSpeed = 5;
-let groundCircleX = canvas.width - 50
+let groundCircleX = canvas.width - 50;
+let isColliding = false;
 
 function drawCircle(x: number, y: number, radius: number) {
   ctx?.beginPath();
@@ -37,19 +38,29 @@ function animate() {
   requestAnimationFrame(animate)
   ctx?.clearRect(0, 0, canvas.width, canvas.height)
 
-  //move top circle
-
-  circleX += moveSpeed;
-  if (circleX >= canvas.width - radius) {
-    circleX = -radius
+  if (!ctx) {
+    return;
   }
+
+  //move top circle
+  if (!isColliding) {
+    circleX += moveSpeed;
+    if (circleX >= canvas.width - radius) {
+      circleX = -radius
+    }
+  }
+
 
 // move ground circle
-  groundCircleX -= groundSpeed;
-  if (groundCircleX <= -50) {
-    groundCircleX = canvas.width - 50
+  if (!isColliding) {
+    groundCircleX -= groundSpeed;
+    if (groundCircleX <= -50) {
+      groundCircleX = canvas.width - 50
+    }
   }
 
+
+  collisionDetection();
   drawCircle(circleX, circleY, radius)
   drawGroundCircle(groundCircleX, 150, 10)
   drawLine(150, 50, 800);
@@ -72,6 +83,15 @@ function jumpUp() {
         clearInterval(descendInterval);
       }
     }, 16);
+  }    
+}
+
+function collisionDetection() {
+  const distanceX = Math.abs(circleX - groundCircleX);
+  if (distanceX <= radius * 2) {
+    isColliding = true;
+  } else {
+    isColliding = false;
   }
 }
 
