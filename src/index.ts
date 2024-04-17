@@ -3,13 +3,33 @@ const canvas = document.getElementById('myCanvas') as HTMLCanvasElement;
 
 const ctx = canvas.getContext('2d');
 
-type Phase = { name: string, description: string }
+type Phase = { coord: { x: number; y: number }, id: number, name: string, description: string, speed: number }
 
 const phases: Phase[] = [
-  { "name": "menstrual", "description": "something about menstrual phase" },
-  { "name": "follicular", "description": "something about follicular phase" },
-  { "name": "ovulation", "description": "something about ovulation phase" },
-  { "name": "luteal", "description": "something about luteal phase" }
+  { coord: {x: canvas.width - 50, y:  150},
+    id: 1, 
+    name: "menstrual", 
+    description: "something about menstrual phase",
+    speed: 6
+  }, { 
+    coord: {x: canvas.width - 50, y: 150},
+    id: 2, 
+    name: "follicular", 
+    description: "something about follicular phase",
+    speed: 4
+  }, {
+    coord: {x: canvas.width - 50, y: 150}, 
+    id: 3, 
+    name: "ovulation", 
+    description: "something about ovulation phase",
+    speed: 2
+  }, { 
+    coord: {x: canvas.width - 50, y: 150},
+    id: 4, 
+    name: "luteal", 
+    description: "something about luteal phase",
+    speed: 1
+  }
 ]
 
 let circleX = 100;
@@ -19,8 +39,8 @@ const moveSpeed = 1.5;
 const groundSpeed = 2;
 let isJumping = false;
 const jumpSpeed = 5;
-let groundCircleX = canvas.width - 50;
 let isColliding = false;
+let collisionID : null | number = null;
 
 function drawCircle(x: number, y: number, radius: number) {
   ctx?.beginPath();
@@ -44,36 +64,51 @@ function drawLine(y: number, x1: number, x2: number) {
 }
 
 function animate() {
-  requestAnimationFrame(animate)
-  ctx?.clearRect(0, 0, canvas.width, canvas.height)
+  if (!isColliding) {
+    requestAnimationFrame(animate)
+    ctx?.clearRect(0, 0, canvas.width, canvas.height)
+  
+    if (!ctx) {
+      return;
+    }
+  
+  // // move ground circle
+  //     groundCircleX -= groundSpeed;
+  //     if (groundCircleX <= -50) {
+  //       groundCircleX = canvas.width - 50
+  //     }
 
-  if (!ctx) {
-    return;
-  }
+  phases.forEach(phase => {
+    phase.coord.x -= phase.speed
+    if (phase.coord.x <= -50) {
+      phase.coord.x = canvas.width - 50;
+    }
+    drawCircle(phase.coord.x, phase.coord.y, radius)
+  })
 
   //move top circle
-  if (!isColliding) {
-    circleX += moveSpeed;
-    if (circleX >= canvas.width - radius) {
-      circleX = -radius
-    }
+  circleX += moveSpeed;
+  if (circleX >= canvas.width - radius) {
+    circleX = -radius
   }
 
+    collisionDetection();
+    drawCircle(circleX, circleY, radius)
+    // drawGroundCircle(groundCircleX, 150, 10)
+    drawLine(150, 50, 800);
 
-// move ground circle
-  if (!isColliding) {
-    groundCircleX -= groundSpeed;
-    if (groundCircleX <= -50) {
-      groundCircleX = canvas.width - 50
+  } else {
+    const phase = phases.find((p) => p.id === collisionID )
+    if (phase) {
+      ctx?.beginPath()
+      ctx?.rect(20, 20, 200, 200)
+      ctx?.stroke();
+      ctx?.fillText(phase.name, 30, 50)
+      ctx?.fillText(phase.description, 30, 70)
     }
   }
-
-
-  collisionDetection();
-  drawCircle(circleX, circleY, radius)
-  drawGroundCircle(groundCircleX, 150, 10)
-  drawLine(150, 50, 800);
 }
+
 
 
 function jumpUp() {
@@ -96,21 +131,30 @@ function jumpUp() {
 }
 
 function collisionDetection() {
-  const distanceX = Math.abs(circleX - groundCircleX);
-  if (distanceX <= radius * 2) {
-    isColliding = true;
-    cyclePhases(phases)
-  } else {
-    isColliding = false;
+  for (let i = 0; i < phases.length; i++) {
+    // const distanceX = Math.abs(circleX - groundCircleX);
+    const distanceX = Math.abs(circleX - phases[i].coord.x);
+    if (distanceX <= radius * 2) {
+      // numberOfCollisions += 1
+      isColliding = true;
+      collisionID = phases[i].id
+      console.log("collision id", collisionID)
+      break;
+    } else {
+      isColliding = false;
+    }  
   }
 }
 
-function cyclePhases(arr: Phase[]) {
-  for (let i = 0; i < arr.length; i++) {
-    const phase = arr[i]
-    console.log(`Phase: ${phase.name} Description: ${phase.description}`)
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'i') {
+    if (isColliding) {
+      isColliding = false;
+      collisionID = null;
+      animate()
+    }
   }
-}
+})
 
 document.addEventListener('keydown', function(e) {
   if (e.key === ' ') {
