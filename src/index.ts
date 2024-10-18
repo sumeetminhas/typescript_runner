@@ -135,11 +135,14 @@ function collisionDetection() {
     // const distanceX = Math.abs(circleX - groundCircleX);
     const distanceX = Math.abs(circleX - phases[i].coord.x);
     if (distanceX <= radius * 2) {
+      const distanceY = Math.abs(circleY - phases[i].coord.y);
+      if (distanceY <= radius * 2) {
+        isColliding = true;
+        collisionID = phases[i].id
+        console.log("collision id", collisionID)
+        break;
+      }
       // numberOfCollisions += 1
-      isColliding = true;
-      collisionID = phases[i].id
-      console.log("collision id", collisionID)
-      break;
     } else {
       isColliding = false;
     }  
