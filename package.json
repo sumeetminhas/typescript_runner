@@ -6,12 +6,15 @@
   "scripts": {
     "build": "tsc && npm run build:cp-public",
     "build:cp-public": "copyfiles ./public/** ./dist",
-    "type": "tsc --noEmit"
+    "type": "tsc --noEmit",
+    "dev": "nodemon"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "nodemon": "^3.1.7",
     "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.4.3"
   },
   "dependencies": {
